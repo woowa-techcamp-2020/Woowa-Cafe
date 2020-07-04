@@ -10,16 +10,16 @@ class Barista {
         this.cafeEmitter.on('음료 제작 요청', (task) => self.startTask(task));
     }
 
-    startTask(task) {
-        const self = this;
-        this.taskCount ++;
-        console.log(`${task.nickname}님의 ${task.drink.name} 시작`);
-        setTimeout(() => self.finishTask(task), task.drink.neededTime * 1000)
+    do(status, task) {
+        this.cafeEmitter.emit(`음료 제작 ${status}`, task);
+        console.log(`${task.nickname}님의 ${task.drink.name} ${status}`);
+        this.taskCount += status == '시작' ? 1 : -1;
     }
 
-    finishTask(task) {
-        console.log(`${task.nickname}님의 ${task.drink.name} 종료`);
-        this.taskCount --;
+    startTask(task) {
+        const self = this;
+        this.do('시작', task);
+        setTimeout(() => self.do('완료', task), task.drink.neededTime * 1000)
     }
 
     isAvailable() {
