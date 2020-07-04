@@ -1,13 +1,20 @@
+const WaitingQueue = require('./WaitingQueue')
+const Barista = require('./Barista');
+
 class Manager {
-    constructor(cafeEmitter, waitingQueue, barista) {
+    constructor(cafeEmitter) {
         this.cafeEmitter = cafeEmitter;
-        this.waitingQueue = waitingQueue;
-        this.barista = barista;
+        this.barista = new Barista(cafeEmitter);
+        this.waitingQueue = new WaitingQueue(cafeEmitter);
     }    
     
     start(){
         const self = this;
+        this.barista.start();
+        this.waitingQueue.start();
         setInterval(() => self.assignTasks(), 1000);
+        this.cafeEmitter.on('음료 제작 시작', (task) => self.updateDashBoard(task, '제작중'));
+        this.cafeEmitter.on('음료 제작 완료', (task) => self.updateDashBoard(task, '완료'));
     }
 
     assignTasks() {
@@ -17,7 +24,10 @@ class Manager {
             this.waitingQueue.pop();
             this.cafeEmitter.emit('음료 제작 요청', task);
         }
-        
+    }
+
+    updateDashBoard(task, status) {
+        this.cafeEmitter.emit('현황판 업데이트', task, status);
     }
     
 }
