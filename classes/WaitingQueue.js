@@ -1,7 +1,7 @@
 class WaitingQueue {
     queue = [];
     frontId = 0;
-    finishTaskCount = 0;
+    
     constructor(cafeEmitter) {
         this.cafeEmitter = cafeEmitter;
     }

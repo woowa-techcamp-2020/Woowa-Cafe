@@ -11,9 +11,6 @@ class Cafe {
     
     constructor(name) {
         this.name = name;
-        process.on('exit', function() {
-            console.log(`${name} 카페가 문을 닫았습니다!`);
-        });
     }
 
     open() {
