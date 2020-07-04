@@ -4,22 +4,35 @@ const Menu = require('./Menu');
 class Cashier {
     orderCount = 0;
 
+    constructor(cafeEmitter){
+        console.log(cafeEmitter);
+        this.cafeEmitter = cafeEmitter;
+    }
+
+    getOrderDrinks (input) {
+        if(!input) return;
+
+        const args = input.split(':');
+
+        const drinkId = parseInt(args[0]); 
+        const count = parseInt(args[1]);
+        if(!drinkId || !count) return;
+
+        const drink = Menu.find(drink => drink.id === drinkId);
+        if(!drink) return;
+
+        const drinks = [];
+        for(let i = 0; i < count; i++)drinks.push(drink);
+
+        return drinks;
+    }
+
     getOrderFromInput (input) {
         const args = input.split(' ');
         const nickname = args[0];
-        const drinkId = parseInt(args[1]);
-        const count = parseInt(args[2]);
+        const drinks = this.getOrderDrinks(args[1]);
 
-        if(!nickname || !drinkId || !count) return;
-
-        return this.createOrder(nickname, drinkId, count);
-    }
-
-    createOrder(nickname, drinkId, count) {
-        const drink = Menu[drinkId];
-        if(!drink) return;
-        const drinks = [];
-        for(let i = 0; i < count; i++)drinks.push(drink);
+        if(!nickname || !drinks) return;
 
         return ({
             id : ++ this.orderCount,
@@ -36,7 +49,7 @@ class Cashier {
         });
         rl.on('line', function (input) {
             const order = self.getOrderFromInput(input);
-            
+            self.cafeEmitter.emit('주문 추가', order); 
         })
         .on('close', function () {
             process.exit();
