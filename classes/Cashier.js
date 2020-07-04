@@ -3,14 +3,14 @@ const Menu = require('./Menu');
 
 class Cashier {
     orderCount = 0;
-
+    drinkCount = 0;
     constructor(cafeEmitter){
         console.log(cafeEmitter);
         this.cafeEmitter = cafeEmitter;
     }
 
-    getOrderDrinks (input) {
-        if(!input) return;
+    createTasks (nickname, input) {
+        if(!nickname || !input) return;
 
         const args = input.split(':');
 
@@ -21,24 +21,22 @@ class Cashier {
         const drink = Menu.find(drink => drink.id === drinkId);
         if(!drink) return;
 
-        const drinks = [];
-        for(let i = 0; i < count; i++)drinks.push(drink);
-
-        return drinks;
+        const tasks = [];
+        const orderId = ++this.orderCount;
+        for(let i = 0; i < count; i++){
+            tasks.push({
+                id : ++this.drinkCount,
+                nickname,
+                orderId,
+                drink,
+            });
+        }
+        return tasks;
     }
 
-    getOrderFromInput (input) {
+    createTasksFromInput (input) {
         const args = input.split(' ');
-        const nickname = args[0];
-        const drinks = this.getOrderDrinks(args[1]);
-
-        if(!nickname || !drinks) return;
-
-        return ({
-            id : ++ this.orderCount,
-            nickname : nickname,
-            drinks : drinks,
-        });
+        return this.createTasks(args[0], args[1]);
     }
 
     listenToOrders() {
@@ -48,8 +46,8 @@ class Cashier {
             output: process.stdout
         });
         rl.on('line', function (input) {
-            const order = self.getOrderFromInput(input);
-            self.cafeEmitter.emit('주문 추가', order); 
+            const tasks = self.createTasksFromInput(input);
+            self.cafeEmitter.emit('주문 추가', tasks); 
         })
         .on('close', function () {
             process.exit();
