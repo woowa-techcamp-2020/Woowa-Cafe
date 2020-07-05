@@ -1,4 +1,4 @@
-# 카페 Woowa 개발하기 피드백 환영합니다!
+# 카페 Woowa 개발하기
 
 ## 목표
 - [구현 요구 사항](https://github.com/woowa-techcamp-2020/Woowa-Cafe/issues/1)대로 구현하기
